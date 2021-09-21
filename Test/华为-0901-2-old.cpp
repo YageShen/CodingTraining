@@ -1,52 +1,47 @@
-/*
- * @Author: your name
- * @Date: 2021-09-16 20:36:36
- * @LastEditTime: 2021-09-16 20:36:57
- * @LastEditors: your name
- * @Description: In User Settings Edit
- * @FilePath: \CodingTraining\Test\华为-0901-2.cpp
- */
-#include <bits/stdc++.h>
-using namespace std;
+#include <unordered_map>
+#include <vector>
+#include <iostream>
+#include <algorithm>
 
-int main() {
+using namespace std;
+int main()
+{
+    unordered_map<string, vector<string>> subClass;
+    unordered_map<string, vector<string>> instance;
     int n;
     cin >> n;
-    unordered_map<string, string> sonToParent;
-    unordered_set<string> instance;
-    
-    string s1, s2, s3;
     for(int i = 0; i < n; ++i) {
-        cin >> s1 >> s2 >> s3;
-        if(s2 == "instanceOf") {
-            instance.insert(s1);
+        string str1, str2, str3;
+        cin >> str1 >> str2 >> str3;
+        if(str2 == "subClassOf") {
+            subClass[str3].push_back(str1);
         }
-        sonToParent[s1] = s3;
+        else if(str2 == "instanceOf") {
+            instance[str3].push_back(str1);
+        }
     }
-    string root;
-    set<string> ret;
-    cin >> root;
-    for(auto leaf : instance) {
-        string node = leaf;
-        while(sonToParent.count(node)) {
-            if(sonToParent[node] == root) {
-                ret.insert(leaf);
-                break;
+    string needFind;
+    vector<string> ret;
+    cin >> needFind;
+    for(unordered_map<string, vector<string>>::iterator it = instance.begin(); it != instance.end(); ++it) {
+        if(it->first == needFind) {
+            ret.insert(ret.end(), it->second.begin(), it->second.end());
+        }
+    }
+    for(unordered_map<string, vector<string>>::iterator it = subClass.begin(); it != subClass.end(); ++it) {
+        if(it->first == needFind) {
+            for(int i = 0; i < (it->second).size(); ++i) {
+                if(instance.count(it->second[i]) > 0) {
+                    ret.insert(ret.end(), instance[it->second[i]].begin(), instance[it->second[i]].end());
+                }
             }
-            node = sonToParent[node];
         }
     }
-    if(ret.empty())
-        cout << "empty" << endl;
-    else {
-        int i = 0;
-        for(auto r : ret) {
-            if(i == 0)
-                cout << r;
-            else
-                cout << " " << r;
-            ++i;
-        }
+    sort(ret.begin(), ret.end());
+    for(int i = 0; i < ret.size() - 1; ++i) {
+        cout << ret[i] << ' ';
     }
+    cout << ret[ret.size() - 1];        
+    //cout << endl;
     return 0;
 }
